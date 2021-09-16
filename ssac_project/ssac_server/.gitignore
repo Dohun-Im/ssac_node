@@ -28,4 +28,4 @@ yarn-error.log*
 node_modules/
 config/
 
-git rm --cached config/
+git rm --cached config

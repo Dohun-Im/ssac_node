@@ -1,0 +1,4 @@
+node_modules
+awsConfig.json
+awsUpload.js
+imgUpload.js

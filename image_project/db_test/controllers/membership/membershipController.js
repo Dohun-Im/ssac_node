@@ -3,6 +3,22 @@ const con = require("../../modules/mysql");
 // const upload = require("../../modules/awsUpload");
 
 const membershipController = {
+  readAllMembership: (req, res) => {
+    const sql = "select * from membership";
+
+    con.query(sql, (err, result) => {
+      if (err)
+        return res.status(400).json({
+          message: "조회 실패",
+        });
+
+      res.status(200).json({
+        message: "조회 성공",
+        data: result,
+      });
+    });
+  },
+
   detailMembership: (req, res) => {
     const { gender } = req.params;
     const sql = "select * from membership where gender=?";

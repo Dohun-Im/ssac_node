@@ -22,6 +22,7 @@ function UploadContainer() {
 
     setTitle(value);
   };
+
   // 이미지 미리보기!!
   const onChangeImg = async (event) => {
     const imageFile = event.target.files[0];
@@ -57,16 +58,6 @@ function UploadContainer() {
   };
 
   const onSubmitMembership = async () => {
-    //membership업로드 기능 구현
-    // const img = imgUrl;
-    // const uploadData = { gender, title, img };
-
-    // const response = await axios({
-    //   method: "POST",
-    //   url: `${baseURL}/membership`,
-    //   body: uploadData,
-    //   // data: uploadData,
-    // });
     const response = await axios({
       method: "POST",
       url: `${baseURL}/membership`,

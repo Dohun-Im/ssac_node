@@ -1,15 +1,15 @@
 import React from "react";
 import FullCenterContainer from "../components/common/container/FullCenterContainer";
-import SigninContainer from "../containers/auth/SigninContainer";
+import SignInContainer from "../containers/auth/SignInContainer";
 
-function Signin() {
+function SignIn({ setIsLoggined }) {
   return (
     <>
       <FullCenterContainer>
-        <SigninContainer />
+        <SignInContainer setIsLoggined={setIsLoggined} />
       </FullCenterContainer>
     </>
   );
 }
 
-export default Signin;
+export default SignIn;

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import SigninComponent from "../../components/auth/SigninComponent";
+import SignInComponent from "../../components/auth/SignInComponent";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
-function SigninContainer() {
-  const baseURL = "http://localhost:3000";
+const baseURL = "http://localhost:3000";
+
+function SignInContainer({ setIsLoggined }) {
+  const history = useHistory();
 
   const [userInfo, setUserInfo] = useState({
     userId: "",
@@ -12,10 +15,6 @@ function SigninContainer() {
 
   const onChangeInput = (event) => {
     const { name, value } = event.target;
-
-    console.log(`name : ${name}`);
-    console.log(`value : ${value}`);
-
     setUserInfo({
       ...userInfo,
       [name]: value,
@@ -25,31 +24,35 @@ function SigninContainer() {
   const onSubmit = async () => {
     try {
       const result = await axios({
-        method: "POST",
         url: `${baseURL}/ssac/auth/signin`,
+        method: "POST",
         data: userInfo,
       });
-
-      if (result === 200) {
-        console.log("로그인 성공");
+      if (result.status === 200) {
+        // data
+        // console.log(result.data);
+        const accessToken = result.data.accessToken;
+        localStorage.setItem("accessToken", accessToken);
+        setIsLoggined(true);
+        history.push("/");
       }
     } catch (error) {
-      console.log(error.response);
       const errorStatus = error.response.status;
       if (errorStatus === 409) {
-        alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+        alert("중복된 아이디가 존재합니다.");
       } else {
-        alert("서버에러 발생!");
+        alert("서버 에러가 발생했습니다.");
       }
     }
   };
+
   return (
-    <SigninComponent
-      userInfo={userInfo}
-      onChangeInput={onChangeInput}
+    <SignInComponent
       onSubmit={onSubmit}
+      onChangeInput={onChangeInput}
+      userInfo={userInfo}
     />
   );
 }
 
-export default SigninContainer;
+export default SignInContainer;

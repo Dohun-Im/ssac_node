@@ -1,42 +1,37 @@
 import React, { useState } from "react";
-import SignupComponent from "../../components/auth/SignupComponent";
+import SignUpComponent from "../../components/auth/SignUpComponent";
 import axios from "axios";
 
-function SignupContainer() {
-  const baseURL = "http://localhost:3000";
+const baseURL = "http://localhost:3000";
 
+function SignUpContainer() {
   const [userInfo, setUserInfo] = useState({
     userId: "",
     name: "",
     password: "",
   });
 
-  // const { userId, password, name } = userInfo;
-
   const onChangeInput = (event) => {
     const { name, value } = event.target;
-
-    console.log(`name : ${name}`);
-    console.log(`value : ${value}`);
-
     setUserInfo({
-      ...userInfo, //전개연산자 매우 중요. 기존에 있던 데이터를 풀어서 써줌
-      [name]: value, // 이후 추가
+      ...userInfo,
+      [name]: value,
     });
   };
 
   const onSubmit = async () => {
     try {
       const result = await axios({
-        method: "POST",
         url: `${baseURL}/ssac/auth/signup`,
+        method: "POST",
         data: userInfo,
       });
-      if (result === 200) {
+      if (result.status === 200) {
+        // data
+        console.log(result.data);
         console.log("회원가입 성공");
       }
     } catch (error) {
-      console.log(error.response);
       const errorStatus = error.response.status;
       if (errorStatus === 409) {
         alert("중복된 아이디가 존재합니다.");
@@ -44,15 +39,21 @@ function SignupContainer() {
         alert("서버 에러가 발생했습니다.");
       }
     }
+
+    // setUserInfo({
+    //   userId: "",
+    //   name: "",
+    //   password: "",
+    // });
   };
 
   return (
-    <SignupComponent
+    <SignUpComponent
       userInfo={userInfo}
-      onChageInput={onChangeInput}
+      onChangeInput={onChangeInput}
       onSubmit={onSubmit}
     />
   );
 }
 
-export default SignupContainer;
+export default SignUpContainer;

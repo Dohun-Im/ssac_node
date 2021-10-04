@@ -1,18 +1,34 @@
-import NavbarContainer from "./containers/common/navbar/NavbarContainer";
 import GlobalStyles from "./GlobalStyles";
+import NavbarContainer from "./containers/common/navbar/NavbarContainer";
 import { Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Signin from "./pages/Signin";
-import Signup from "./pages/Signup";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [isLoggined, setIsLoggined] = useState(false);
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      setIsLoggined(true);
+    } else {
+      setIsLoggined(false);
+    }
+  }, []);
+
   return (
     <>
       <GlobalStyles />
-      <NavbarContainer />
+      <NavbarContainer isLoggined={isLoggined} setIsLoggined={setIsLoggined} />
       <Route path="/" exact={true} component={Home} />
-      <Route path="/signin" exact={true} component={Signin} />
-      <Route path="/signup" exact={true} component={Signup} />
+      <Route
+        path="/signin"
+        exact={true}
+        component={() => <SignIn setIsLoggined={setIsLoggined} />}
+      />
+      <Route path="/signup" exact={true} component={SignUp} />
     </>
   );
 }

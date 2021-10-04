@@ -15,7 +15,8 @@ const NavbarWrap = styled.div`
   width: 100%;
   background: #ffffff;
 `;
-const Navcontainer = styled.div`
+
+const NavContainer = styled.div`
   max-width: 99.6rem;
   width: 100%;
   height: 100%;
@@ -60,7 +61,7 @@ const NavProfileWrap = styled.div`
 
 const NavIconsWrap = styled.div`
   display: flex;
-  align-items: conter;
+  align-items: center;
   height: 100%;
 `;
 
@@ -68,36 +69,138 @@ const NavStyledIcon = styled.div`
   font-size: 2.5rem;
   display: flex;
   align-items: center;
+  cursor: pointer;
 
   & + & {
-    //NavStledIcon 끼리 근접해 있다면! 이라는 뜻
-    margin-left: 1rem; //두번째 세번째만 left에 마진값 들어감
+    margin-left: 1rem;
   }
 `;
 
-const NavProfileImge = styled.img`
+const NavProfileImg = styled.img`
   width: 3.4rem;
   height: 3.4rem;
   margin-left: 3rem;
 `;
 
-function NavbarComponent() {
+const NavSignout = styled.div`
+  font-size: 1.5rem;
+  font-weight: normal;
+  text-decoration: none;
+  color: #000000;
+  margin-right: 10px;
+  cursor: pointer;
+`;
+
+const NavSearchRoundBox = styled.div`
+  border: 1px solid black;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2rem;
+  display: flex;
+  align-items: center;
+`;
+
+const NavSearchInput = styled.input`
+  flex: 1;
+  border: none;
+  width: 13rem;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const SearchInputWrap = styled.div`
+  position: relative;
+  margin-right: 1rem;
+`;
+
+const SearchBoard = styled.div`
+  width: 100%;
+  height: 15rem;
+  position: absolute;
+  top: 3.5rem;
+  box-shadow: 0, 0.4rem, 0.8rem, 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid #dedede;
+  background: #ffffff;
+`;
+
+const SearchItemWrap = styled.div`
+  padding: 1rem;
+  cursor: pointer;
+
+  & + & {
+    border-top: 1px solid #dedede;
+  }
+`;
+
+const SearchItemTitle = styled.div`
+  font-size: 1.3rem;
+  font-weight: normal;
+`;
+
+function NavbarComponent({
+  isLoggined,
+  onClickSignout,
+  onChangeInput,
+  searchInfo,
+  onClickSearch,
+  searchState,
+  searchData,
+  onClickAutoComplete,
+}) {
   return (
     <>
       <NavbarWrap>
-        <Navcontainer>
+        <NavContainer>
           <NavFrontWrap>
-            <NavLogo>SSAC</NavLogo>
+            <NavLogo>Sssac</NavLogo>
             <NavLinkWrap>
-              <NavStyledLink to="/signin">로그인</NavStyledLink>
-              <NavStyledLink to="/signup">회원가입</NavStyledLink>
+              {!isLoggined ? (
+                <>
+                  <NavStyledLink to="/signin">로그인</NavStyledLink>
+                  <NavStyledLink to="/signup">회원가입</NavStyledLink>
+                </>
+              ) : (
+                <>
+                  <NavStyledLink to="/write">글쓰기</NavStyledLink>
+                  <NavSignout onClick={onClickSignout}>로그아웃</NavSignout>
+                </>
+              )}
             </NavLinkWrap>
           </NavFrontWrap>
           <NavProfileWrap>
             <NavIconsWrap>
-              <NavStyledIcon>
-                <AiOutlineSearch style={{ fontSize: "2rem" }} />
-              </NavStyledIcon>
+              <SearchInputWrap>
+                <NavSearchRoundBox>
+                  <NavSearchInput
+                    name="search"
+                    value={searchInfo.search}
+                    onChange={onChangeInput}
+                  />
+                  <NavStyledIcon>
+                    <AiOutlineSearch onClick={onClickSearch} />
+                  </NavStyledIcon>
+                </NavSearchRoundBox>
+                {searchState ? (
+                  <>
+                    <SearchBoard>
+                      {searchData.map((item, idx) => (
+                        <SearchItemWrap
+                          key={idx}
+                          onClick={() => onClickAutoComplete(item.title)}
+                        >
+                          <SearchItemTitle
+                            dangerouslySetInnerHTML={{ __html: item.title }}
+                          ></SearchItemTitle>
+                        </SearchItemWrap>
+                      ))}
+                    </SearchBoard>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </SearchInputWrap>
+
               <NavStyledIcon>
                 <AiOutlineComment />
               </NavStyledIcon>
@@ -105,13 +208,13 @@ function NavbarComponent() {
                 <AiOutlineBell />
               </NavStyledIcon>
             </NavIconsWrap>
-            <NavProfileImge
+            <NavProfileImg
               src={
                 "https://careerly.co.kr/_next/static/images/img_profile-dummy-9e28d259cbf9e126af9c467a4bf0884f.png"
               }
             />
           </NavProfileWrap>
-        </Navcontainer>
+        </NavContainer>
       </NavbarWrap>
     </>
   );

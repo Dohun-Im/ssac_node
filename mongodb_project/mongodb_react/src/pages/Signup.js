@@ -1,15 +1,13 @@
 import React from "react";
 import FullCenterContainer from "../components/common/container/FullCenterContainer";
-import SignupContainer from "../containers/auth/SingupContainer";
+import SignUpContainer from "../containers/auth/SignUpContainer";
 
-function Signup() {
+function SignUp() {
   return (
-    <>
-      <FullCenterContainer>
-        <SignupContainer />
-      </FullCenterContainer>
-    </>
+    <FullCenterContainer>
+      <SignUpContainer />
+    </FullCenterContainer>
   );
 }
 
-export default Signup;
+export default SignUp;

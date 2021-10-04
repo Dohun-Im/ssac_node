@@ -6,12 +6,17 @@ const SearchController = {
 
     try {
       const result = await client.search({
-        index: "kor_index",
+        index: "post_index",
         body: {
-          //   size: 3,
+          size: 3,
           query: {
             match: {
-              "subway.ngram": q,
+              "title.ngram": q,
+            },
+          },
+          highlight: {
+            fields: {
+              "title.ngram": {},
             },
           },
         },
@@ -22,8 +27,8 @@ const SearchController = {
       const searchResult = result.hits.hits;
 
       const findResult = searchResult.map((item) => {
-        const result = item._source;
-        return { ...result, score: item._score };
+        const data = item.highlight["title.ngram"];
+        return { title: data, score: item._score };
       });
 
       res.status(200).json({

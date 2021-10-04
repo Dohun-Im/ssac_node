@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import RoundedButton from "../common/button/RoundedButton";
 import RoundedInput from "../common/input/RoundedInput";
-import InputLabel from "../common/text/InputLabel";
+import RoundedButton from "../common/button/RoundedButton";
+import InputLable from "../common/text/InputLable";
 import InputTitle from "../common/text/InputTitle";
 import BorderBox from "../common/box/BorderBox";
 
@@ -16,22 +16,25 @@ const InputWrap = styled.div`
   }
 `;
 
-function SigninComponent({ onChangeInput, onSubmit, userInfo }) {
-  const { userId, password } = userInfo;
-
+function SignInComponent({ onChangeInput, onSubmit, userInfo }) {
   return (
     <BorderBox>
       <InputTitle>로그인</InputTitle>
       <FormWrap>
         <InputWrap>
-          <InputLabel>유저 아이디</InputLabel>
-          <RoundedInput name="userId" value={userId} onChange={onChangeInput} />
+          <InputLable>유저 아이디</InputLable>
+          <RoundedInput
+            name="userId"
+            value={userInfo.userId}
+            onChange={onChangeInput}
+          />
         </InputWrap>
         <InputWrap>
-          <InputLabel>비밀번호</InputLabel>
+          <InputLable>비밀 번호</InputLable>
           <RoundedInput
+            type="password"
             name="password"
-            value={password}
+            value={userInfo.password}
             onChange={onChangeInput}
           />
         </InputWrap>
@@ -41,4 +44,4 @@ function SigninComponent({ onChangeInput, onSubmit, userInfo }) {
   );
 }
 
-export default SigninComponent;
+export default SignInComponent;

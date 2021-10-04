@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import RoundedButton from "../common/button/RoundedButton";
-import RoundedInput from "../common/input/RoundedInput";
-import InputLabel from "../common/text/InputLabel";
-import InputTitle from "../common/text/InputTitle";
 import BorderBox from "../common/box/BorderBox";
+import InputTitle from "../common/text/InputTitle";
+import InputLable from "../common/text/InputLable";
+import RoundedInput from "../common/input/RoundedInput";
+import RoundedButton from "../common/button/RoundedButton";
 
 const FormWrap = styled.div`
   margin-top: 2rem;
@@ -17,11 +17,10 @@ const InputWrap = styled.div`
 `;
 
 const StyledRoundedButton = styled(RoundedButton)`
-  background: #ed6652;
+  background: orange;
 `;
-//styled component를 받아와서 수정하는 방법이 가장 확장성이있음!!!!
 
-function SignupComponent({ onChangeInput, userInfo, onSubmit }) {
+function SignUpComponent({ onChangeInput, userInfo, onSubmit }) {
   const { userId, name, password } = userInfo;
 
   return (
@@ -29,27 +28,26 @@ function SignupComponent({ onChangeInput, userInfo, onSubmit }) {
       <InputTitle>회원가입</InputTitle>
       <FormWrap>
         <InputWrap>
-          <InputLabel>유저 아이디</InputLabel>
+          <InputLable>유저 아이디</InputLable>
           <RoundedInput name="userId" value={userId} onChange={onChangeInput} />
         </InputWrap>
         <InputWrap>
-          <InputLabel>비밀번호</InputLabel>
+          <InputLable>이름</InputLable>
+          <RoundedInput name="name" value={name} onChange={onChangeInput} />
+        </InputWrap>
+        <InputWrap>
+          <InputLable>비밀 번호</InputLable>
           <RoundedInput
+            type="password"
             name="password"
             value={password}
             onChange={onChangeInput}
           />
         </InputWrap>
-        <InputWrap>
-          <InputLabel>이름</InputLabel>
-          <RoundedInput name="name" value={name} onChange={onChangeInput} />
-        </InputWrap>
-        <StyledRoundedButton onClick={onSubmit}>
-          회원가입 신청
-        </StyledRoundedButton>
+        <StyledRoundedButton onClick={onSubmit}>회원가입</StyledRoundedButton>
       </FormWrap>
     </BorderBox>
   );
 }
 
-export default SignupComponent;
+export default SignUpComponent;

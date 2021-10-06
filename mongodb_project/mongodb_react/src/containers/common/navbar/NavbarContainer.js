@@ -87,6 +87,10 @@ function NavbarContainer({ isLoggined, setIsLoggined }) {
     history.push("/");
   };
 
+  const onClickHome = () => {
+    history.push("/");
+  };
+
   return (
     <NavbarComponent
       searchData={searchData}
@@ -97,6 +101,7 @@ function NavbarContainer({ isLoggined, setIsLoggined }) {
       searchInfo={searchInfo}
       onClickSearch={onClickSearch}
       onClickAutoComplete={onClickAutoComplete}
+      onClickHome={onClickHome}
     />
   );
 }

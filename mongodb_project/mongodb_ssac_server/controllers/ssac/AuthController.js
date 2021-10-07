@@ -2,6 +2,22 @@ const user = require("../../models/user");
 const jwtModule = require("../../modules/jwtModule");
 
 const AuthController = {
+  getProfile: (req, res) => {
+    const userInfo = req.userInfo;
+
+    if (userInfo) {
+      //있을 때
+      res.status(200).json({
+        message: "프로필 조회 성공",
+        data: userInfo,
+      });
+    } else {
+      res.status(400).json({
+        message: "프로필 조회 실패",
+      });
+    }
+  },
+
   signup: async (req, res) => {
     const { name, userId, password } = req.body;
     // 중복된 유저 존재하는지 찾은 뒤 없으면 저장

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const boardSchema = new Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
-  wirteTime: { type: Date, default: new Date(), required: true },
+  writeTime: { type: Date, default: new Date(), required: true },
   boardPw: { type: String, required: true },
   writer: {
     //관계형 처럼 collection 간에 관계 만들어주기

@@ -5,7 +5,7 @@ import axios from "axios";
 
 const baseURL = "http://localhost:3000";
 
-function NavbarContainer({ isLoggined, setIsLoggined }) {
+function NavbarContainer({ isLoggined, setIsLoggined, profile }) {
   const history = useHistory();
 
   //검색 자동완성창이 검색할때만 뜨도록
@@ -93,6 +93,7 @@ function NavbarContainer({ isLoggined, setIsLoggined }) {
 
   return (
     <NavbarComponent
+      profile={profile}
       searchData={searchData}
       searchState={searchState}
       isLoggined={isLoggined}

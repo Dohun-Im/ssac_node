@@ -46,18 +46,23 @@ const BoardController = {
   },
 
   readIdBoard: async (req, res) => {
+    //추가코드
+
     const { id } = req.params;
+
+    // 추가코드
     try {
       const result = await board.findById(id); //findById(id)도 동일
       if (!result) return res.status(400).json({ message: "조회 할 값 없음" });
 
       res.status(200).json({
         message: "조회 성공",
-        data: result,
+        data: result, //추가코드
       });
+      console.log(result);
     } catch (error) {
       res.status(500).json({
-        messtae: "DB 서버에러",
+        message: "DB 서버에러",
       });
     }
   },
@@ -80,20 +85,8 @@ const BoardController = {
       });
     }
 
-    // try {
-    //   const ownResult = await board.findOne({ _id: id }); //게시물의 _id
-    //   const ownId = ownResult.writer;
-    //   if (ownId.toString() !== userInfo._id.toString()) // 비교하고자 하는 유저의 _id
-    //     return res.status(409).json({ message: "접근 권한이 없습니다." });
-    // } catch (error) {
-    //   console.log(error);
-    //   res.status(500).json({
-    //     message: "DB 서버 에러",
-    //   });
-    // }
-
     try {
-      await board.findByIdAndDelete(id);
+      await board.findByIdAndDelete(id); // findOneAndDelete{_id:id}
       res.status(200).json({
         message: "삭제 성공",
       });

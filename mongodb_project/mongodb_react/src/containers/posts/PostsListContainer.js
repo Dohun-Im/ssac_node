@@ -24,7 +24,7 @@ function PostsListContainer() {
         // console.log(response);
         if (response.status === 200) {
           const result = response.data.data;
-          console.log(result);
+          // console.log(result);
           setPostsList(result);
           setLoading(false);
         }

@@ -117,18 +117,6 @@ const BoardController = {
       });
     }
 
-    // try {
-    //   const ownResult = await board.findOne({ _id: id });
-    //   const ownId = ownResult.writer;
-    //   if (ownId.toString() !== userInfo._id.toString())
-    //     return res.status(409).json({ message: "접근 권한이 없습니다." });
-    // } catch (error) {
-    //   console.log(error);
-    //   res.status(500).json({
-    //     message: "DB 서버 에러",
-    //   });
-    // }
-
     try {
       const result = await board.findByIdAndUpdate(
         id,

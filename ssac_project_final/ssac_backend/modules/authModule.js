@@ -32,6 +32,7 @@ const authModule = {
         return res.status(309).json({
           message: "추가 정보를 입력하세요",
         });
+      console.log(decoded.verified);
     } catch (error) {
       console.log(error);
       return res.status(500).json({

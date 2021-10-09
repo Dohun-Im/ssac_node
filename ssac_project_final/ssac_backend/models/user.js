@@ -14,7 +14,7 @@ const userSchema = new Schema({
   gender: { type: Number, enum: [0, 1, 2], default: 1 },
   degree: { type: Number, default: null },
   inoDate: { type: Date, default: null },
-  verifed: { type: Boolean, default: false },
+  verified: { type: Boolean, default: false },
   profileImage: { type: String, default: null },
 });
 

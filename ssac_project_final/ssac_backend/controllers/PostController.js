@@ -1,6 +1,7 @@
 const user = require("../models/user");
 const sc = require("../modules/statusCode");
 const jwtModule = require("../modules/jwtModule");
+const post = require("../models/post");
 
 const PostController = {
   createPost: async (req, res) => {
@@ -29,10 +30,50 @@ const PostController = {
     }
   },
 
+  readAllPost: async (req, res) => {
+    try {
+      const allPost = await post.find().populate("writer", "nickName email");
+      if (!allPost)
+        return res
+          .status(400)
+          .json({ message: "게시물을 조회할 수 없습니다." });
+
+      res.status(sc.OK).json({
+        message: "게시물 전체 조회 성공",
+        data: allPost,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "DB 서버 에러",
+      });
+    }
+  },
+
+  readDetailPost: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const detailPost = await post.findById(id);
+      if (!detailPost)
+        return res
+          .status(400)
+          .json({ message: "조회 할 게시물이 존재하지 않습니다." });
+
+      res.status(sc.OK).json({
+        messgae: "해당 게시물 조회 성공",
+        data: detailPost,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "DB 서버 에러",
+      });
+    }
+  },
+
   updatePost: async (req, res) => {
     const { id } = req.params;
 
-    const { title, content, category, tags } = req;
+    const { title, content, category, tags } = req.body;
 
     try {
       const updated = await post.findByIdAndUpdate(

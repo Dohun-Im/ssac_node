@@ -5,7 +5,10 @@ const PostController = require("../../controllers/PostController");
 const authModule = require("../../modules/authModule");
 
 router.post("/", authModule.loggedIn, PostController.createPost);
-router.post("/:id", authModule.loggedIn, PostController.updatePost);
-router.post("/:id", authModule.loggedIn, PostController.deletePost);
+router.put("/:id", authModule.loggedIn, PostController.updatePost);
+router.delete("/:id", authModule.loggedIn, PostController.deletePost);
+
+router.get("/", PostController.readAllPost);
+router.get("/:id", PostController.readDetailPost);
 
 module.exports = router;

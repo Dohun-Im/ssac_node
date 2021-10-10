@@ -4,10 +4,10 @@ const Schema = mongoose.Schema;
 const postSchema = new Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
-  category: { type: Number, required: true, default: 0, enum: [] },
+  category: { type: Number, default: 0 },
   tags: [String],
-  publishedDate: { type: Date, default: Date.now, required: true },
-  updatedDate: { type: Date, required: true },
+  publishedDate: { type: Date, default: new Date() },
+  updatedDate: { type: Date, default: null },
   writer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -19,7 +19,7 @@ const postSchema = new Schema({
         ref: "user",
       },
       commentContent: { type: String, required: true },
-      commentDate: { type: Date, default: Date.now },
+      commentDate: { type: Date, default: new Date() },
     },
   ],
 });

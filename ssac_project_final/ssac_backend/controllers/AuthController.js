@@ -71,6 +71,17 @@ const AuthController = {
       });
     }
   },
+  updateProfile: (req, res) => {
+    //로그인 상태에서만 가능하도록. -> 미들웨어 받아와야
+    // 근데 미들웨어 받아오면 verified가 false이므로 바로 에러가 떠버림
+    // const userInfo = req.userInfo;
+    // const
+    // const {type, age, gender, degree, inoDate, verified, profileImage } = req.body;
+  },
+
+  deleteProfile: (req, res) => {
+    //로그인 상태에서만 가능하도록 -> 미들웨어 받아와야
+  },
 };
 
 module.exports = AuthController;

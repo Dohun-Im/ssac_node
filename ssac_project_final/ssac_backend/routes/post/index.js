@@ -4,11 +4,21 @@ var router = express.Router();
 const PostController = require("../../controllers/PostController");
 const authModule = require("../../modules/authModule");
 
-router.post("/", authModule.loggedIn, PostController.createPost);
-router.put("/:id", authModule.loggedIn, PostController.updatePost);
-router.delete("/:id", authModule.loggedIn, PostController.deletePost);
+//verified :true
+router.post("/", authModule.checkVerified, PostController.createPost);
+router.put("/:id", authModule.checkVerified, PostController.updatePost);
+router.delete("/:id", authModule.checkVerified, PostController.deletePost);
 
+// 아무나 가능
 router.get("/", PostController.readAllPost);
-router.get("/:id", PostController.readDetailPost);
+
+// loggedIn: true
+router.get("/:id", authModule.loggedIn, PostController.readDetailPost);
+router.post("/:id/comments", authModule.loggedIn, PostController.createComment);
+router.delete(
+  "/:id/comments/:commentid",
+  authModule.loggedIn,
+  PostController.deleteComment
+);
 
 module.exports = router;

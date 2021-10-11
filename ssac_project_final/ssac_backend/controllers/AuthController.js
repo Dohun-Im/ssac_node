@@ -26,8 +26,8 @@ const AuthController = {
           message: "중복된 닉네임 존재",
         });
       }
-    } catch (Error) {
-      console.error(error);
+    } catch (error) {
+      console.log(error);
       res.status(500).json({
         messtae: "DB 서버 에러",
         error: error,
@@ -46,23 +46,27 @@ const AuthController = {
           message: "해당 email이 존재하지 않습니다.",
         });
       } else {
-        if (password !== result.password) {
-          return res.status(409).json({
-            message: "비밀번호가 일치하지 않습니다.",
-          });
-        } else {
-          const payload = {
-            nickName: result.nickName,
-            verified: result.verified,
-          };
-          const token = jwtModule.create(payload);
-          console.log(token);
+        result.comparePassword(password, (err, isMatch) => {
+          if (isMatch) {
+            console.log("pw 일치");
+            const payload = {
+              nickName: result.nickName,
+              verified: result.verified,
+            };
+            const token = jwtModule.create(payload);
+            console.log(token);
 
-          res.status(200).json({
-            message: "로그인 성공",
-            accessToken: token,
-          });
-        }
+            return res.status(200).json({
+              message: "로그인 성공",
+              accessToken: token,
+            });
+          } else {
+            console.log("ow 불일치");
+            return res.status(409).json({
+              message: "비밀번호가 일치하지 않습니다.",
+            });
+          }
+        });
       }
     } catch (error) {
       res.status(500).json({
@@ -71,16 +75,89 @@ const AuthController = {
       });
     }
   },
-  updateProfile: (req, res) => {
-    //로그인 상태에서만 가능하도록. -> 미들웨어 받아와야
-    // 근데 미들웨어 받아오면 verified가 false이므로 바로 에러가 떠버림
-    // const userInfo = req.userInfo;
-    // const
-    // const {type, age, gender, degree, inoDate, verified, profileImage } = req.body;
+  // getAllProfile: (req, res) => {
+  //   const userInfo = req.userInfo;
+
+  //   if (userInfo) {
+  //     res.status(sc.OK).json({
+  //       message: "프로필 조회 성공",
+  //       data: userInfo,
+  //     });
+  //   } else {
+  //     res.status(400).json({
+  //       message: "프로필 조회 실패",
+  //     });
+  //   }
+  // },
+
+  getDetailPorfile: (req, res) => {
+    const userInfo = req.userInfo;
+
+    if (userInfo) {
+      return res.status(sc.OK).json({
+        message: "프로필 조회 성공",
+        data: userInfo,
+      });
+    } else {
+      res.status(500).json({
+        message: "프로필 조회 실패",
+      });
+    }
   },
 
-  deleteProfile: (req, res) => {
-    //로그인 상태에서만 가능하도록 -> 미들웨어 받아와야
+  updateProfile: async (req, res) => {
+    const userInfo = req.userInfo;
+    const img = req.file;
+    const { type, age, gender, degree } = req.body;
+
+    try {
+      const result = await user.findByIdAndUpdate(
+        userInfo.id,
+        {
+          type,
+          age,
+          gender,
+          degree,
+          inoDate1: new Date(),
+          inoDate2: new Date(),
+          profileImage: img.location,
+          verified: true,
+        },
+        { new: true }
+      );
+
+      const payload = {
+        nickName: result.nickName,
+        verified: result.verified,
+      };
+      const token = jwtModule.create(payload);
+      console.log(token);
+
+      res.status(sc.OK).json({
+        message: "회원정보 수정을 완료했습니다.",
+        data: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "DB 서버 에러",
+      });
+    }
+  },
+
+  deleteProfile: async (req, res) => {
+    const userInfo = req.userInfo;
+
+    try {
+      const result = await user.findByIdAndDelete(userInfo.id);
+      res.status(sc.OK).json({
+        message: "회원 탈퇴가 완료되었습니다.",
+        data: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "DB 서버 에러",
+      });
+    }
   },
 };
 

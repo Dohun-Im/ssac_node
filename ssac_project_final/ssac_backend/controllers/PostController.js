@@ -32,7 +32,7 @@ const PostController = {
 
   readAllPost: async (req, res) => {
     try {
-      const allPost = await post.find().populate("writer", "nickName email");
+      const allPost = await post.find().populate("writer", "nickName");
       if (!allPost)
         return res
           .status(400)
@@ -53,7 +53,7 @@ const PostController = {
     const { id } = req.params;
 
     try {
-      const detailPost = await post.findById(id);
+      const detailPost = await post.findById(id).populate("writer", "nickName");
       if (!detailPost)
         return res
           .status(400)
@@ -96,22 +96,82 @@ const PostController = {
         message: "게시물 수정 실패",
         error: error,
       });
-      console.log(error);
     }
   },
 
   deletePost: async (req, res) => {
+    const userInfo = req.userInfo;
     const { id } = req.params;
 
+    const check = await post.checkWriter({
+      postId: id,
+      writerId: userInfo._id,
+    });
+    if (check === -1) {
+      return res.status(409).json({ message: "권한이 없습니다." });
+    } else if (check === -2) {
+      return res.status(500).json({ message: "DB 서버 에러" });
+    } else {
+      try {
+        await post.findByIdAndDelete(id);
+        res.status(sc.OK).json({
+          message: "게시물 삭제 성공",
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "DB 서버 에러",
+        });
+      }
+    }
+  },
+
+  createComment: async (req, res) => {
+    const userInfo = req.userInfo;
+    const { content } = req.body;
+    const { id } = req.params;
+
+    const newComment = {
+      commentWriter: userInfo._id,
+      commentContent: content,
+      commnetDate: new Date(),
+    };
     try {
-      await post.findByIdAndDelete(id);
+      const updated = await post.findByIdAndUpdate(
+        id,
+        { $push: { comments: newComment } },
+        { new: true }
+      );
       res.status(sc.OK).json({
-        message: "게시물 삭제 성공",
+        message: "댓글 추가 완료",
+        data: updated,
       });
     } catch (error) {
       res.status(500).json({
         message: "DB 서버 에러",
       });
+    }
+  },
+
+  deleteComment: async (req, res) => {
+    const userInfo = req.userInfo;
+    const postId = req.params.id;
+    const commentId = req.params.commentid;
+
+    try {
+      const updated = await post.findByIdAndUpdate(
+        //findByIdAndDelete 아님@!!@!@
+        postId,
+        { $pull: { comments: { _id: commentId } } },
+        { new: true }
+      );
+      res.status(sc.OK).json({
+        message: "댓글 삭제 완료",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "DB 서버 에러",
+      });
+      console.log(error);
     }
   },
 };

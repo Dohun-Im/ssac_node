@@ -14,7 +14,19 @@ router.get("/", PostController.readAllPost);
 
 // loggedIn: true
 router.get("/:id", authModule.loggedIn, PostController.readDetailPost);
+
+router.get(
+  "/:writerId/realted",
+  authModule.loggedIn,
+  PostController.readRelatedPost
+);
+
 router.post("/:id/comments", authModule.loggedIn, PostController.createComment);
+router.put(
+  "/:id/comments/:commentid",
+  authModule.loggedIn,
+  PostController.updateComment
+);
 router.delete(
   "/:id/comments/:commentid",
   authModule.loggedIn,

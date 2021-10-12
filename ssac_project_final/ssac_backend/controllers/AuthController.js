@@ -8,16 +8,24 @@ const AuthController = {
   signup: async (req, res) => {
     const { email, password, nickName } = req.body;
     try {
-      const checkemail = await user.findOne({ email });
+      const checkEmail = await user.findOne({ email });
       const checkNickName = await user.findOne({ nickName });
 
-      if (!checkemail && !checkNickName) {
+      if (!checkEmail && !checkNickName) {
         const userModel = new user({ email, password, nickName });
         await userModel.save();
+
+        const payload = {
+          email: email,
+          verified: false,
+        };
+        const token = jwtModule.create(payload);
+        console.log(token);
         res.status(sc.OK).json({
           message: "회원가입 성공",
+          accessToken: token,
         });
-      } else if (checkemail) {
+      } else if (checkEmail) {
         res.status(409).json({
           message: "중복된 이메일 존재",
         });
@@ -50,7 +58,7 @@ const AuthController = {
           if (isMatch) {
             console.log("pw 일치");
             const payload = {
-              nickName: result.nickName,
+              email: result.email,
               verified: result.verified,
             };
             const token = jwtModule.create(payload);
@@ -91,7 +99,8 @@ const AuthController = {
   // },
 
   getDetailPorfile: (req, res) => {
-    const userInfo = req.userInfo;
+    let userInfo = req.userInfo;
+    userInfo.password = null;
 
     if (userInfo) {
       return res.status(sc.OK).json({
@@ -105,58 +114,96 @@ const AuthController = {
     }
   },
 
+  uploadImage: function (req, res) {
+    const img = req.file;
+    if (img) {
+      res.status(sc.OK).json({
+        message: "이미지 업로드 완료",
+        imgUrl: img.location,
+      });
+    } else {
+      res.status(400).json({
+        message: "이미지 업로드 실패",
+      });
+    }
+  },
+
   updateProfile: async (req, res) => {
     const userInfo = req.userInfo;
-    const img = req.file;
-    const { type, age, gender, degree } = req.body;
+    const userId = req.params.userId;
 
-    try {
-      const result = await user.findByIdAndUpdate(
-        userInfo.id,
-        {
-          type,
-          age,
-          gender,
-          degree,
-          inoDate1: new Date(),
-          inoDate2: new Date(),
-          profileImage: img.location,
-          verified: true,
-        },
-        { new: true }
-      );
-
-      const payload = {
-        nickName: result.nickName,
-        verified: result.verified,
-      };
-      const token = jwtModule.create(payload);
-      console.log(token);
-
-      res.status(sc.OK).json({
-        message: "회원정보 수정을 완료했습니다.",
-        data: result,
+    if (userInfo._id.toString() !== userId) {
+      return res.status(409).json({
+        message: "회원 정보 수정 권한이 없습니다.",
       });
-    } catch (error) {
-      res.status(500).json({
-        message: "DB 서버 에러",
-      });
+    } else {
+      try {
+        const { type, bDay, gender, degree, inoDate1, inoDate2, profileImage } =
+          req.body;
+
+        let verified = false;
+        if (
+          bDay !== null &&
+          gender !== null &&
+          type !== null &&
+          inoDate1 !== null &&
+          profileImage !== null
+        ) {
+          verified = true;
+        }
+        const result = await user.findByIdAndUpdate(
+          userId,
+          {
+            type,
+            bDay,
+            gender,
+            degree,
+            inoDate1: new Date(),
+            inoDate2: new Date(),
+            profileImage,
+            verified: true,
+          },
+          { new: true }
+        );
+
+        const payload = {
+          nickName: result.nickName,
+          verified: result.verified,
+        };
+        const token = jwtModule.create(payload);
+        console.log(token);
+
+        res.status(sc.OK).json({
+          message: "회원정보 수정을 완료했습니다.",
+          data: result,
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "DB 서버 에러",
+        });
+      }
     }
   },
 
   deleteProfile: async (req, res) => {
     const userInfo = req.userInfo;
+    const userId = req.params.userId;
 
-    try {
-      const result = await user.findByIdAndDelete(userInfo.id);
-      res.status(sc.OK).json({
-        message: "회원 탈퇴가 완료되었습니다.",
-        data: result,
+    if (userInfo._id.toString() !== userId) {
+      return res.status(409).json({
+        message: "회원 탈퇴는 회원 본인만 신청 가능합니다.",
       });
-    } catch (error) {
-      res.status(500).json({
-        message: "DB 서버 에러",
-      });
+    } else {
+      try {
+        const result = await user.findByIdAndDelete(userId);
+        res.status(sc.OK).json({
+          message: "회원 탈퇴가 완료되었습니다.",
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "DB 서버 에러",
+        });
+      }
     }
   },
 };

@@ -10,12 +10,15 @@ const userSchema = new Schema({
     enum: ["모더나", "화이자", "AZ", "얀센", null],
     default: null,
   },
-  age: { type: Number, default: null },
-  gender: { type: Number, enum: [0, 1, 2], default: 1 },
+  bDay: { type: Date, default: null },
+  gender: { type: Number, enum: [0, 1, 2, null], default: null },
   degree: { type: Number, default: null },
   inoDate1: { type: Date, default: null },
   inoDate2: { type: Date, default: null },
   profileImage: { type: String, default: null },
+
+  signupDate: { type: Date, default: new Date() },
+  updateDate: { type: Date, default: null },
 
   verified: { type: Boolean, default: false },
 });

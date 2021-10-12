@@ -73,27 +73,60 @@ const PostController = {
   updatePost: async (req, res) => {
     const { id } = req.params;
 
-    const { title, content, category, tags } = req.body;
+    const isSameWriter = await post.checkWriter({
+      postId: id,
+      writerId: userInfo._id,
+    });
+    if (isSameWriter === -1) {
+      return res.status(409).json({ message: "권한이 없습니다." });
+    } else if (isSameWriter === -2) {
+      return res.status(500).json({ message: "DB 서버 에러" });
+    } else {
+      const { title, content, category, tags } = req.body;
+      try {
+        const updated = await post.findByIdAndUpdate(
+          id,
+          {
+            title,
+            content,
+            category,
+            tags,
+            updatedDate: new Date(),
+          },
+          { new: true }
+        );
+        res.status(sc.OK).json({
+          message: "게시물 수정 성공",
+          data: updated,
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "게시물 수정 실패",
+          error: error,
+        });
+      }
+    }
+  },
 
+  readRelatedPost: async function (req, res) {
+    const { writerId } = req.params;
     try {
-      const updated = await post.findByIdAndUpdate(
-        id,
-        {
-          title,
-          content,
-          category,
-          tags,
-          updatedDate: new Date(),
-        },
-        { new: true }
-      );
-      res.status(sc.OK).json({
-        message: "게시물 수정 성공",
-        data: updated,
-      });
+      const result = await post
+        .find({ writer: writerId })
+        .populate("writer", "nickName");
+      if (result) {
+        return res.status(200).json({
+          message: "조회 성공",
+          data: result,
+        });
+      } else {
+        return res.status(400).json({
+          message: "해당 id의 게시글이 존재하지 않습니다",
+        });
+      }
     } catch (error) {
       res.status(500).json({
-        message: "게시물 수정 실패",
+        message: "조회 실패",
         error: error,
       });
     }
@@ -157,21 +190,71 @@ const PostController = {
     const postId = req.params.id;
     const commentId = req.params.commentid;
 
-    try {
-      const updated = await post.findByIdAndUpdate(
-        //findByIdAndDelete 아님@!!@!@
-        postId,
-        { $pull: { comments: { _id: commentId } } },
-        { new: true }
-      );
-      res.status(sc.OK).json({
-        message: "댓글 삭제 완료",
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: "DB 서버 에러",
-      });
-      console.log(error);
+    const isSameWriter = await post.checkComment({
+      postId: postId,
+      commnetId: commentId,
+      writerId: userInfo._id,
+    });
+
+    if (isSameWriter === -1) {
+      return res.status(409).json({ message: "권한이 없습니다." });
+    } else if (isSameWriter === -2) {
+      return res.status(500).json({ message: "DB 서버 에러" });
+    } else if (isSameWriter === 1) {
+      try {
+        const updated = await post.findByIdAndUpdate(
+          //findByIdAndDelete 아님@!!@!@
+          postId,
+          { $pull: { comments: { _id: commentId } } },
+          { new: true }
+        );
+        res.status(sc.OK).json({
+          message: "댓글 삭제 완료",
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "DB 서버 에러",
+        });
+        console.log(error);
+      }
+    }
+  },
+
+  updateComment: async (req, res) => {
+    const userInfo = req.userInfo;
+    const postId = req.params.id;
+    const commentId = req.params.commentid;
+
+    const isSameWriter = await post.checkComment({
+      postId: postId,
+      commnetId: commentId,
+      writerId: userInfo._id,
+    });
+    if (isSameWriter === -1) {
+      return res.status(409).json({ message: "권한이 없습니다." });
+    } else if (isSameWriter === -2) {
+      return res.status(500).json({ message: "DB 서버 에러" });
+    } else if (isSameWriter === 1) {
+      try {
+        const updated = await post.findOneAndUpdate(
+          { _id: postId, "comments._id": commentId },
+          {
+            $set: {
+              "comment.$.commentContent": content,
+              "comments.$.commentDate": new Date(),
+            },
+          },
+          { new: true }
+        );
+        res.status(sc.OK).json({
+          message: "댓글 수정 완료",
+          data: updated,
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "DB 서버 에러",
+        });
+      }
     }
   },
 };

@@ -4,7 +4,7 @@ var router = express.Router();
 const authRouter = require("./auth/index");
 const postRouter = require("./post/index");
 
-router.use("/auth", authRouter);
-router.use("/post", postRouter);
+router.use("/api/auth", authRouter);
+router.use("/api/post", postRouter);
 
 module.exports = router;
